@@ -45,9 +45,10 @@ VALUES
 (1, 101),
 (2, 102),
 (3, 103),
-(4, 105),
+(4, 104),
 (5, 105),
-(6, 104)
+(6, 105)
+
 --3
 CREATE VIEW vw_DanhSachMuonSach
 AS 
@@ -66,7 +67,7 @@ FROM PhieuMuon p
 JOIN DocGia d ON p.MaDG = d.MaDG
 JOIN Sach s ON p.MaSach = s.MaSach
 --6
-CREATE TRIGGER tg_GiamTonKho_KhiMuon
+CREATE TRIGGER trg_GiamTonKho_KhiMuon
 ON PhieuMuon
 AFTER INSERT
 AS
@@ -77,3 +78,28 @@ BEGIN
 	JOIN inserted i ON s.MaSach = i.MaSach
 END
 --7 
+SELECT * FROM Sach
+WHERE MaSach = 101
+
+INSERT INTO PhieuMuon (MaDG, MaSach)
+VALUES (1, 101)
+
+SELECT * FROM PhieuMuon
+--8
+CREATE PROCEDURE sp_DemSoLanMuonSach
+@MaDG INT,
+@TongSoLan INT OUTPUT
+AS
+BEGIN
+	SELECT @TongSoLan = COUNT(*) 
+	FROM PhieuMuon
+	WHERE MaDG = @MaDG
+END
+
+--9
+DECLARE @Tong INT
+EXEC sp_DemSoLanMuonSach
+	@MaDG = 1,
+	@TongSoLan = @Tong OUTPUT
+SELECT N'Tổng số lần mượn sách: ' AS ThongBao,
+       @Tong AS TongSoLan
